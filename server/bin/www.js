@@ -7,8 +7,11 @@
 import app from '../app';
 import debugLib from 'debug';
 import http from 'http';
+import mongoose from 'mongoose';
 import 'dotenv/config';
-const debug = debugLib('todo:server');
+
+const serverDebug = debugLib('todo:server');
+const dbDebug = debugLib('todo:db');
 
 /**
  * Normalize a port into a number, string, or false.
@@ -63,7 +66,7 @@ const onError = (error) => {
 const onListening = () => {
   const addr = server.address();
   const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-  debug(`Listening on ${bind}`);
+  serverDebug(`Listening on ${bind}`);
 };
 
 /**
@@ -78,6 +81,17 @@ app.set('port', port);
  */
 
 const server = http.createServer(app);
+
+/**
+ * Connect to the database.
+ */
+try {
+  mongoose.connect(process.env.DB_URL, () =>
+    dbDebug('Connected to the Database')
+  );
+} catch (err) {
+  console.error(err);
+}
 
 /**
  * Listen on provided port, on all network interfaces.
