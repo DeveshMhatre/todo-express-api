@@ -7,6 +7,7 @@ import cors from 'cors';
 
 import indexRouter from './routes/index';
 import usersRouter from './routes/users';
+import verifyToken from './middlewares/authJWT';
 
 const app = express();
 
@@ -18,7 +19,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
 
-app.use('/api/v1/', indexRouter);
+// Auth-only route
+app.use('/api/v1/', verifyToken, indexRouter);
+
 app.use('/api/v1/users', usersRouter);
 
 export default app;
