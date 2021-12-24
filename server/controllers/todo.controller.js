@@ -1,5 +1,9 @@
+import debugLib from 'debug';
+
 import Todo from '../models/todo';
 import User from '../models/user';
+
+const debug = debugLib('todo:server');
 
 const create = async (req, res) => {
   if (!req.user) {
@@ -50,4 +54,21 @@ const list = async (req, res) => {
   }
 };
 
-export { create, list };
+const destroy = async (req, res) => {
+  if (!req.user) {
+    res.status(403).send({ message: 'User not logged in' });
+  }
+
+  const { id } = req.user;
+  const { task } = req.params;
+
+  try {
+    await Todo.findByIdAndDelete(task);
+    await User.findByIdAndUpdate(id, { $pull: { todos: task } });
+    res.status(200).send({ message: 'Task deleted successfully' });
+  } catch (err) {
+    res.status(500).send({ message: err?.message });
+  }
+};
+
+export { create, list, destroy };
