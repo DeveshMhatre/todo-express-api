@@ -48,7 +48,12 @@ const signin = async (req, res) => {
         );
 
         res.status(200).send({
-          user: { id: user?.id, email: user?.email, fullName: user?.fullName },
+          user: {
+            id: user?.id,
+            email: user?.email,
+            fullName: user?.fullName,
+            todos: user?.todos,
+          },
           message: 'Login successful',
           accessToken: token,
         });
