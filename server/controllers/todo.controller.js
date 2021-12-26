@@ -8,6 +8,7 @@ const debug = debugLib('todo:server');
 const create = async (req, res) => {
   if (!req.user) {
     res.status(403).send({ message: 'User not logged in' });
+    return;
   }
 
   const { title, completed } = req.body;
@@ -33,6 +34,7 @@ const create = async (req, res) => {
 const list = async (req, res) => {
   if (!req.user) {
     res.status(403).send({ message: 'User not logged in' });
+    return;
   }
 
   const { id } = req.user;
@@ -57,10 +59,16 @@ const list = async (req, res) => {
 const destroy = async (req, res) => {
   if (!req.user) {
     res.status(403).send({ message: 'User not logged in' });
+    return;
   }
 
-  const { id } = req.user;
+  const { id, todos } = req.user;
   const { task } = req.params;
+
+  if (!todos.includes(task)) {
+    res.status(403).send({ message: 'Unauthorised access' });
+    return;
+  }
 
   try {
     await Todo.findByIdAndDelete(task);
