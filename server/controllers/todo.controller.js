@@ -85,6 +85,36 @@ const show = async (req, res) => {
   }
 };
 
+const update = async (req, res) => {
+  if (!req.user) {
+    res.status(401).send({ message: 'User not logged in' });
+    return;
+  }
+
+  const { todos } = req.user;
+  const { task } = req.params;
+
+  if (!todos.includes(task)) {
+    res.status(403).send({ message: 'Unauthorised access' });
+    return;
+  }
+
+  try {
+    await Todo.findByIdAndUpdate(task, { $set: req.body });
+    const todo = await Todo.findById(task);
+    res.status(200).send({
+      message: 'Task updated successfully',
+      todo: {
+        id: todo.id,
+        title: todo.title,
+        completed: todo.completed,
+      },
+    });
+  } catch (err) {
+    res.status(500).send({ message: err?.message });
+  }
+};
+
 const destroy = async (req, res) => {
   if (!req.user) {
     res.status(401).send({ message: 'User not logged in' });
@@ -108,4 +138,4 @@ const destroy = async (req, res) => {
   }
 };
 
-export { create, list, show, destroy };
+export { create, list, show, update, destroy };
