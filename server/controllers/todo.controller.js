@@ -7,7 +7,7 @@ const debug = debugLib('todo:server');
 
 const create = async (req, res) => {
   if (!req.user) {
-    res.status(403).send({ message: 'User not logged in' });
+    res.status(401).send({ message: 'User not logged in' });
     return;
   }
 
@@ -25,7 +25,7 @@ const create = async (req, res) => {
     await User.findByIdAndUpdate(id, {
       $push: { todos: task.id },
     });
-    res.status(200).send({ message: 'Task successfully created' });
+    res.status(201).send({ message: 'Task successfully created' });
   } catch (err) {
     res.status(500).send({ message: err?.message });
   }
@@ -33,7 +33,7 @@ const create = async (req, res) => {
 
 const list = async (req, res) => {
   if (!req.user) {
-    res.status(403).send({ message: 'User not logged in' });
+    res.status(401).send({ message: 'User not logged in' });
     return;
   }
 
@@ -58,7 +58,7 @@ const list = async (req, res) => {
 
 const show = async (req, res) => {
   if (!req.user) {
-    res.status(403).send({ message: 'User not logged in' });
+    res.status(401).send({ message: 'User not logged in' });
     return;
   }
 
@@ -87,7 +87,7 @@ const show = async (req, res) => {
 
 const destroy = async (req, res) => {
   if (!req.user) {
-    res.status(403).send({ message: 'User not logged in' });
+    res.status(401).send({ message: 'User not logged in' });
     return;
   }
 
