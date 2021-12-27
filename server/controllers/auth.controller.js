@@ -4,11 +4,18 @@ import bcrypt from 'bcrypt';
 import User from '../models/user';
 
 const signup = async (req, res) => {
+  const { fullName, email, role, password } = req.body;
+
+  if (!password) {
+    res.status(400).send({ message: 'Password not provided' });
+    return;
+  }
+
   const user = new User({
-    fullName: req?.body?.fullName,
-    email: req?.body?.email,
-    role: req?.body?.role,
-    password: bcrypt.hashSync(req?.body?.password, 8),
+    fullName: fullName,
+    email: email,
+    role: role,
+    password: bcrypt.hashSync(password, 8),
   });
 
   try {
@@ -20,16 +27,15 @@ const signup = async (req, res) => {
 };
 
 const signin = async (req, res) => {
+  const { email, password } = req.body;
+
   try {
-    const user = await User.findOne({ email: req?.body?.email });
+    const user = await User.findOne({ email: email });
 
     if (!user) {
       res.status(404).send({ message: 'User not found' });
     } else {
-      const verifyPassword = bcrypt.compareSync(
-        req?.body?.password,
-        user?.password
-      );
+      const verifyPassword = bcrypt.compareSync(password, user?.password);
 
       if (!verifyPassword) {
         res.status(401).send({
